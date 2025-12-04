@@ -1,4 +1,5 @@
 from utils.geometry import *
+from utils.insolation import anual_insolation
 
 def ideal_irrad(dias, horas, ghi_irrad, phi, b_angle):
   ideal_irrad = []
@@ -16,6 +17,22 @@ def ideal_irrad(dias, horas, ghi_irrad, phi, b_angle):
     ideal_irrad.append(irrad)
 
   return ideal_irrad
+
+def optimal_tilt_ideal(dias, horas, ghi_irrad, lat, min_tilt=20, max_tilt=50):
+    angles = [20, 21, 25, 30, 35, 40, 45, 50]
+    annual_values = []
+
+    for beta in angles:
+        gt = ideal_irrad(dias, horas, ghi_irrad, lat, beta)
+        anual = anual_insolation(gt, h=1/6) / 1000  # kWh/m²
+        annual_values.append(anual)
+
+    # Encontrar ángulo óptimo
+    idx_opt = np.argmax(annual_values)
+    ang_opt = angles[idx_opt]
+    max_insol = annual_values[idx_opt]
+
+    return angles, annual_values, ang_opt, max_insol
 
 
 

@@ -1,13 +1,16 @@
 from utils.decomposition import *
+from utils.insolation import anual_insolation
+from utils.plot import plot_xy
+import numpy as np
 
 pg = 0.2  # Ground reflectance
 
 def liu_jordan(dias, horas, ghi_irrad, phi, b_angle):
-    dihi, dhi = erbs_decomposition(dias, horas, ghi_irrad, phi)
-    
+    dihi_list, dhi_list = erbs_decomposition(dias, horas, ghi_irrad, phi)
+        
     gt_list = []
-    
-    for d, T, dihi, dhi, ghi in zip(dias, horas, dihi, dhi, ghi_irrad):
+
+    for d, T, dihi, dhi, ghi in zip(dias, horas, dihi_list, dhi_list, ghi_irrad):
         zenith = angulo_zenith(d,T,phi)
         thetai = angulo_incidente(d,T,phi,b_angle)
 
@@ -29,3 +32,20 @@ def liu_jordan(dias, horas, ghi_irrad, phi, b_angle):
         gt_list.append(gt)
 
     return gt_list
+
+def optimal_tilt_lj(dias, horas, ghi_irrad, lat, min_tilt=20, max_tilt=50):
+    angles = [20, 21, 25, 30, 35, 40, 45, 50]
+    annual_values = []
+
+    for beta in angles:
+        gt = liu_jordan(dias, horas, ghi_irrad, lat, beta)
+        anual = anual_insolation(gt, h=1/6) / 1000  # kWh/m²
+        annual_values.append(anual)
+
+    # Encontrar ángulo óptimo
+    idx_opt = np.argmax(annual_values)
+    ang_opt = angles[idx_opt]
+    max_insol = annual_values[idx_opt]
+
+    return angles, annual_values, ang_opt, max_insol
+    
