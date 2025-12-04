@@ -20,7 +20,7 @@ if __name__ == "__main__":
     phi = 21.0  # Latitud en grados
     b_angle = 21.0  # Ángulo de inclinación del panel en grados
     
-    # Calcular la irradiancia total en el plano inclinado usando el modelo de Liu-Jordan
+    # Calcular la irradiancia total en el plano inclinado usando el modelo de HDKR
     gt_values = hdkr.hdkr(dias, horas, ghi_irrad, phi, b_angle)
 
     # Crear Excel con valores calculados

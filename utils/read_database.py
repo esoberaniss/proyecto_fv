@@ -36,6 +36,26 @@ def read_database(database_path):
     print(f"Error al leer la base de datos: {e}")
     return None, None, None, None
 
+def pvlib_database(database_path, zona_horaria='America/Mexico_City'):
+  try:
+    df = pd.read_excel(database_path)
+
+    # Construir el índice de tiempo (Fecha + Hora)
+    fecha_hora = df['Fecha'].astype(str) + ' ' + df['Hora'].astype(str)
+    df.index = pd.to_datetime(fecha_hora)
+
+    df.index = df.index.tz_localize(zona_horaria)
+
+    df = df.rename(columns={
+                  'Irradiancia': 'ghi',
+                  'Temperatura': 'temp_air'
+                  })
+    
+    return df[['ghi', 'temp_air']]
+
+  except Exception as e:
+    print(f"Error al leer la base de datos: {e}")
+
 # Ejemplo de uso
 if __name__ == "__main__":
   database_path = 'database_path'
