@@ -5,7 +5,7 @@ Gsc = 1367  # Constant solar irradiance [W/m2]
 def erbs_decomposition(dias,horas,ghi_irrad,phi):
 
     dhi_list = []
-    dni_list = []
+    dihi_list = []
 
     for d, T, ghi in zip(dias, horas, ghi_irrad):
         
@@ -26,9 +26,9 @@ def erbs_decomposition(dias,horas,ghi_irrad,phi):
             dhi = ghi * 0.165
         
         dhi = max(dhi, 0)  # Asegurarse de que DHI no sea negativo
-        dni = (ghi - dhi) / cosd(angulo_zenith(d,T,phi)) if cosd(angulo_zenith(d,T,phi)) > 0 else 0
+        dihi = (ghi - dhi) # Direct horizontal irradiance
 
         dhi_list.append(dhi)
-        dni_list.append(dni)
+        dihi_list.append(dihi)
     
-    return dni_list, dhi_list
+    return dihi_list, dhi_list

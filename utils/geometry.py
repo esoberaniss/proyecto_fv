@@ -13,17 +13,27 @@ def angulo_w(T):
     return (15*(12-T))
 #-------------------------------------------------------------------------------
 def altura_solar(d,T,phi):
-    return asind(sind(declinacion_solar(d))*sind(phi) + cosd(declinacion_solar(d))*cosd(phi)*cosd(angulo_w(T)))
+    val = sind(declinacion_solar(d))*sind(phi) + cosd(declinacion_solar(d))*cosd(phi)*cosd(angulo_w(T))
+    return asind(np.maximum(0.0, val))  # Altura solar no negativa
 #-------------------------------------------------------------------------------
 def angulo_zenith(d,T,phi):
     return 90 - altura_solar(d,T,phi)
 #-------------------------------------------------------------------------------
 def angulo_azimut(d,T,phi):
-    return acosd(
-        (sind(altura_solar(d,T,phi))*sind(phi)-sind(declinacion_solar(d))) / (cosd(altura_solar(d,T,phi))*cosd(phi))
-    )
+    alpha = altura_solar(d, T, phi)
+    delta = declinacion_solar(d)
+    w = angulo_w(T)
+
+    if alpha < 0.1:
+        return 0.0  # Sol debajo del horizonte
+    
+    num = sind(alpha)*sind(phi) - sind(delta)
+    den = cosd(alpha)*cosd(phi)
+    mag = acosd(num / den)
+
+    return mag if w > 0 else -mag
 #-------------------------------------------------------------------------------
 def angulo_incidente(d,T,phi,b):
     return acosd(
-        sind(angulo_zenith(d,T,phi))*sind(angulo_azimut(d,T,phi)) + sind(angulo_zenith(d,T,phi))*cosd(angulo_azimut(d,T,phi))*sind(b) + cosd(angulo_zenith(d,T,phi))*cosd(b)
+        sind(angulo_zenith(d,T,phi))*cosd(angulo_azimut(d,T,phi))*sind(b) + cosd(angulo_zenith(d,T,phi))*cosd(b)
     )
