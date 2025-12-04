@@ -35,7 +35,7 @@ def read_database(database_path):
   except Exception as e:
     print(f"Error al leer la base de datos: {e}")
     return None, None, None, None
-
+#------------------------------------------------------------------------------
 def pvlib_database(database_path, zona_horaria='America/Mexico_City'):
   try:
     df = pd.read_excel(database_path)
@@ -55,8 +55,19 @@ def pvlib_database(database_path, zona_horaria='America/Mexico_City'):
 
   except Exception as e:
     print(f"Error al leer la base de datos: {e}")
-
-# Ejemplo de uso
+#------------------------------------------------------------------------------
+def read_database_v(database_path):
+  try:
+    df = pd.read_csv(database_path, skiprows=9)
+    lista_ws10m = df['WS10M'].tolist()
+    lista_year = df['DOY'].tolist()
+    data_database = {'Velocidad_Viento': lista_ws10m,'dias': lista_year}
+    return data_database
+  except Exception as e:
+      print(f"Error al leer la base de datos: {e}")
+      return None, None, None, None
+  
+  # Ejemplo de uso
 if __name__ == "__main__":
   database_path = 'database_path'
   data = read_database(database_path)
