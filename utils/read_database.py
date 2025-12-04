@@ -67,7 +67,7 @@ def read_database_v(database_path):
       print(f"Error al leer la base de datos: {e}")
       return None, None, None, None
   
-  # Ejemplo de uso
+# Ejemplo de uso
 if __name__ == "__main__":
   database_path = 'database_path'
   data = read_database(database_path)
