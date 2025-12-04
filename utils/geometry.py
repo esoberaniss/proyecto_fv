@@ -37,3 +37,8 @@ def angulo_incidente(d,T,phi,b):
     return acosd(
         sind(angulo_zenith(d,T,phi))*cosd(angulo_azimut(d,T,phi))*sind(b) + cosd(angulo_zenith(d,T,phi))*cosd(b)
     )
+#-------------------------------------------------------------------------------
+def go_irrad(d, T, phi):
+    Gsc = 1367  # Constante de irradiancia solar [W/m2]
+    Go = Gsc * (1 + 0.033 * cosd((360 * d) / 365)) * cosd(angulo_zenith(d,T,phi))
+    return Go

@@ -1,7 +1,5 @@
 from utils.geometry import *
 
-Gsc = 1367  # Constant solar irradiance [W/m2]
-
 def erbs_decomposition(dias,horas,ghi_irrad,phi):
 
     dhi_list = []
@@ -10,7 +8,7 @@ def erbs_decomposition(dias,horas,ghi_irrad,phi):
     for d, T, ghi in zip(dias, horas, ghi_irrad):
         
         # Calcular Go (irradiancia extraterrestre)
-        Go = Gsc * (1 + 0.033 * cosd((360 * d) / 365)) * cosd(angulo_zenith(d,T,phi))
+        Go = go_irrad(d, T, phi)
 
         # Calcular KT
         if Go != 0:
