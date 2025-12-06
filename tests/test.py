@@ -1,6 +1,7 @@
 from models.irradiance import liu_jordan
 from models.irradiance import hdkr
 from models.pvlibmodels import liu_jordan_pvlib, hdkr_pvlib
+from models.irradiance import ideal
 from utils.read_database import read_database
 from utils.geometry import *
 from utils.insolation import anual_insolation
@@ -21,8 +22,13 @@ if __name__ == "__main__":
     
     # Parámetros del sitio
     lat = 20.96  # Latitud en grados
-    long = -89.6  # Longitud en grados
+    long = -89.62  # Longitud en grados
     tilt = 50  # Ángulo de inclinación del panel en grados
+
+    gt_values = hdkr_pvlib.hdkr_pvlib(database_path, lat, long, tilt)
+    anual_insol = anual_insolation(gt_values, h=1/6)/1000  # Convertir a kWh/m²
+    print(f"Insolación anual en el plano inclinado (Liu-Jordan): {anual_insol} Wh/m²")
+
 
     # Barrido de ángulos para encontrar el óptimo con Liu-Jordan
     #angles, annual_values, ang_opt, max_insol = liu_jordan.optimal_tilt_lj(dias, horas, ghi_irrad, lat)
