@@ -64,8 +64,8 @@ def read_database_v(database_path):
     data_database = {'Velocidad_Viento': lista_ws10m,'dias': lista_year}
     return data_database
   except Exception as e:
-      print(f"Error al leer la base de datos: {e}")
-      return None, None, None, None
+    print(f"Error al leer la base de datos: {e}")
+    return None, None, None, None
   
 # Ejemplo de uso
 if __name__ == "__main__":
