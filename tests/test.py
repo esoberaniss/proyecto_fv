@@ -1,33 +1,52 @@
-from models.irradiance import liu_jordan
-from models.irradiance import hdkr
-from models.pvlibmodels import liu_jordan_pvlib, hdkr_pvlib
-from models.irradiance import ideal
-from utils.read_database import read_database
+from models.irradiance import ideal, liu_jordan, hdkr
+from models.power_energy.annual_energy import annual_energy
+from models.power_energy.real_power import real_power
+from utils.read_database import *
 from utils.geometry import *
-from utils.insolation import anual_insolation
-from utils.plot import plot_xy_multi, plot_xy
+from utils.insolation import *
+from utils.plot import *
+from models.temperatures.sandia import t_sandia
 import pandas as pd
+import numpy as np
 
 if __name__ == "__main__":
 
     # Ruta al archivo de la base de datos
     database_path = r'C:\Users\emman\Desktop\proyecto_fv\data\Base_Datos_Actualizada.xlsx'
+    database_path_wind = r'C:\Users\emman\Desktop\proyecto_fv\data\Base_Datos_Viento.csv'
     
-    # Leer la base de datos
+    # Leer las bases de datos
     data = read_database(database_path)
+    data_wind = read_database_v(database_path_wind)
     
+    # Extraer datos de la base de datos principal
     dias = data['dias']
     horas = data['horas']
     ghi_irrad = data['irradiancias']
-    
+    temp_amb = data['temperaturas']
+
+    # Extraer datos de la base de datos de viento
+    dias_wind = data_wind['dias']
+    horas_wind = data_wind['horas']
+    wind_speeds = data_wind['Velocidad_Viento']
+    wind_speeds_complete = agregar_vel_viento(dias, horas, dias_wind, horas_wind, wind_speeds)
+
     # Parámetros del sitio
     lat = 20.96  # Latitud en grados
     long = -89.62  # Longitud en grados
-    tilt = 50  # Ángulo de inclinación del panel en grados
+    tilt = 24  # Ángulo de inclinación en grados
 
-    gt_values = hdkr_pvlib.hdkr_pvlib(database_path, lat, long, tilt)
-    anual_insol = anual_insolation(gt_values, h=1/6)/1000  # Convertir a kWh/m²
-    print(f"Insolación anual en el plano inclinado (Liu-Jordan): {anual_insol} Wh/m²")
+    # Calcular la irradiancia total en el plano inclinado usando el modelo hdkr
+    gt_values = hdkr.hdkr(dias, horas, ghi_irrad, lat, tilt)
+
+    # Calcular la temperatura de celda
+    t_cell = t_sandia(temp_amb, gt_values, wind_speeds_complete)
+
+    # Calcular la potencia real y la energía anual
+    power_list = real_power(gt_values, t_cell, p_nominal=700, gamma_coeff=0.003)
+    annual_e = np.trapz(power_list, dx=1/6)/1000  # kWh
+    #annual_e = annual_energy(power_list, h=1/6)  # kWh
+    print(f"Energía anual: {annual_e} kWh")
 
 
     # Barrido de ángulos para encontrar el óptimo con Liu-Jordan

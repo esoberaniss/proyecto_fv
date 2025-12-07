@@ -1,5 +1,5 @@
 from utils.decomposition import *
-from utils.insolation import anual_insolation
+from utils.insolation import annual_insolation
 from utils.plot import plot_xy
 import numpy as np
 
@@ -39,8 +39,8 @@ def optimal_tilt_lj(dias, horas, ghi_irrad, lat, min_tilt=20, max_tilt=50):
 
     for beta in angles:
         gt = liu_jordan(dias, horas, ghi_irrad, lat, beta)
-        anual = anual_insolation(gt, h=1/6) / 1000  # kWh/m²
-        annual_values.append(anual)
+        annual = annual_insolation(gt, h=1/6) / 1000  # kWh/m²
+        annual_values.append(annual)
 
     # Encontrar ángulo óptimo
     idx_opt = np.argmax(annual_values)

@@ -1,6 +1,6 @@
 from utils.geometry import *
 from utils.decomposition import erbs_decomposition
-from utils.insolation import anual_insolation
+from utils.insolation import annual_insolation
 import numpy as np
 
 pg = 0.2  # Ground reflectance
@@ -52,8 +52,8 @@ def optimal_tilt_hdkr(dias, horas, ghi_irrad, lat, min_tilt=20, max_tilt=50):
 
     for beta in angles:
         gt = hdkr(dias, horas, ghi_irrad, lat, beta)
-        anual = anual_insolation(gt, h=1/6) / 1000  # kWh/m²
-        annual_values.append(anual)
+        annual = annual_insolation(gt, h=1/6) / 1000  # kWh/m²
+        annual_values.append(annual)
 
     # Encontrar ángulo óptimo
     idx_opt = np.argmax(annual_values)
