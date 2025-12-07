@@ -1,6 +1,8 @@
+from datetime import date
 import pandas as pd
 import datetime
-
+import math
+#------------------------------------------------------------------------------
 def read_database(database_path):
   try:
     df = pd.read_excel(database_path)
@@ -60,13 +62,36 @@ def read_database_v(database_path):
   try:
     df = pd.read_csv(database_path, skiprows=9)
     lista_ws10m = df['WS10M'].tolist()
-    lista_year = df['DOY'].tolist()
-    data_database = {'Velocidad_Viento': lista_ws10m,'dias': lista_year}
+    lista_day = df['DY'].tolist()   
+    lista_month = df['MO'].tolist()   
+    lista_hour = df['HR'].tolist()
+    year = 2023
+    list_day_n = []
+    for mes, dia in zip(lista_month, lista_day):
+        fecha = date(year, mes, dia)
+        day_year = fecha.timetuple().tm_yday  
+        list_day_n.append(day_year)
+    data_database = {'Velocidad_Viento': lista_ws10m,'dias': list_day_n,'horas': lista_hour}
     return data_database
   except Exception as e:
-    print(f"Error al leer la base de datos: {e}")
-    return None, None, None, None
-  
+      print(f"Error al leer la base de datos: {e}")
+      return None, None, None, None
+#------------------------------------------------------------------------------
+# Esta une la información 
+def agregar_vel_viento(dias1, horas1, dias2, horas2, ws):
+    mapa_ws = {}
+    for d, h, w in zip(dias2, horas2, ws):
+        hora_entera = int(math.floor(h))
+        mapa_ws[(d, hora_entera)] = w
+        nueva_columna_ws = []
+    for dia_df1, hora_df1 in zip(dias1, horas1):
+        clave_busqueda = (dia_df1, int(math.floor(hora_df1)))
+        velocidad = mapa_ws.get(clave_busqueda, None)
+        nueva_columna_ws.append(velocidad)
+    return nueva_columna_ws
+#------------------------------------------------------------------------------
+    
+
 # Ejemplo de uso
 if __name__ == "__main__":
   database_path = 'database_path'
